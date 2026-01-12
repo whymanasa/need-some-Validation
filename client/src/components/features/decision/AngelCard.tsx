@@ -15,14 +15,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen w-full relative pointer-events-none">
             {/* Halo Animation - Drops from top */}
-            <motion.img
-                src="/halo.png"
-                alt="Halo"
-                initial={{ y: -200, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 120, damping: 10, delay: 0.3 }}
-                className="w-32 h-auto z-20 mb-[-20px] pointer-events-auto drop-shadow-2xl"
-            />
+
 
             {/* Angel Character - Fades in after Halo */}
             <motion.div
@@ -34,18 +27,10 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
-                <img src="/angel.png" alt="Angel" className="w-48 h-auto drop-shadow-2xl brightness-110" />
+                <img src="/angel.png" alt="Angel" className="w-80 h-auto drop-shadow-2xl brightness-110" />
             </motion.div>
 
-            <motion.h2
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="text-4xl font-serif text-sky-700 mt-4 tracking-wide bg-white/60 px-6 py-2 rounded-full backdrop-blur-sm pointer-events-auto border-2 border-sky-300/50 shadow-lg"
-                style={{ fontFamily: "var(--font-playfair), serif" }}
-            >
-                The Angel
-            </motion.h2>
+
 
             {/* Loading State or Scroll Message */}
             <div className="mt-8 w-full max-w-md px-4 min-h-[100px] flex justify-center pointer-events-auto">
@@ -56,7 +41,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
                         className="text-sky-600 font-serif font-semibold text-lg bg-white/90 px-8 py-4 rounded-full shadow-lg border-2 border-sky-300"
                         style={{ fontFamily: "var(--font-playfair), serif" }}
                     >
-                        Listening to your conscience...
+                        Listening to the greater good...
                     </motion.div>
                 ) : (
                     <ScrollMessage text={content || "Tap the Angel to see the message..."} isOpen={isScrollOpen} />
@@ -72,7 +57,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
                     className="absolute bottom-10 text-sky-700/60 text-sm italic font-serif"
                     style={{ fontFamily: "var(--font-playfair), serif" }}
                 >
-                    (Tap the Angel)
+                    (Tap for Guidance)
                 </motion.p>
             )}
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSwipeable } from "react-swipeable"
 import { motion, AnimatePresence } from "framer-motion"
 import AngelCard from "@/components/features/decision/AngelCard"
@@ -10,12 +10,53 @@ import api from "@/lib/axios"
 
 type ViewState = "neutral" | "angel" | "devil" | "judge"
 
+const PLACEHOLDERS = [
+  "Pizza or Salad?",
+  "Quit my job?",
+  "Buy the shoes?",
+  "Gym or Nap?",
+  "Text him back?",
+  "One more episode?",
+]
+
 export default function Home() {
   const [view, setView] = useState<ViewState>("neutral")
   const [userInput, setUserInput] = useState("")
   const [angelReason, setAngelReason] = useState("")
   const [devilReason, setDevilReason] = useState("")
+  const [judgeReason, setJudgeReason] = useState("")
   const [loading, setLoading] = useState(false)
+
+  // Dynamic Placeholder State
+  const [placeholder, setPlaceholder] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [loopNum, setLoopNum] = useState(0)
+  const [typingSpeed, setTypingSpeed] = useState(150)
+
+  // Typewriter Effect
+  useEffect(() => {
+    const handleType = () => {
+      const i = loopNum % PLACEHOLDERS.length
+      const fullText = PLACEHOLDERS[i]
+
+      setPlaceholder(isDeleting
+        ? fullText.substring(0, placeholder.length - 1)
+        : fullText.substring(0, placeholder.length + 1)
+      )
+
+      setTypingSpeed(isDeleting ? 50 : 150)
+
+      if (!isDeleting && placeholder === fullText) {
+        setTimeout(() => setIsDeleting(true), 2000) // Wait before deleting
+      } else if (isDeleting && placeholder === "") {
+        setIsDeleting(false)
+        setLoopNum(loopNum + 1)
+      }
+    }
+
+    const timer = setTimeout(handleType, typingSpeed)
+    return () => clearTimeout(timer)
+  }, [placeholder, isDeleting, loopNum, typingSpeed])
 
   // Handlers for Swipe Gestures
   const handlers = useSwipeable({
@@ -40,15 +81,18 @@ export default function Home() {
     setLoading(true)
     setAngelReason("")
     setDevilReason("")
+    setJudgeReason("")
 
     try {
-      const [angelRes, devilRes] = await Promise.all([
+      const [angelRes, devilRes, judgeRes] = await Promise.all([
         api.post("/validate", { promptType: "angel", userInput }),
         api.post("/validate", { promptType: "devil", userInput }),
+        api.post("/validate", { promptType: "judge", userInput }),
       ])
 
       setAngelReason(angelRes.data.result)
       setDevilReason(devilRes.data.result)
+      setJudgeReason(judgeRes.data.result)
     } catch (error) {
       console.error("Error fetching decisions:", error)
     } finally {
@@ -59,41 +103,67 @@ export default function Home() {
   return (
     <main {...handlers} className="h-screen w-full relative overflow-hidden flex flex-col items-center justify-center">
       <AnimatePresence mode="wait">
-        {/* NEUTRAL VIEW - Mysterious crossroads theme with foggy gradient */}
+        {/* NEUTRAL VIEW - Split Crossroads Theme */}
         {view === "neutral" && (
           <motion.div
             key="neutral"
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.4 }}
-            className="absolute inset-0 bg-gradient-to-r from-blue-100/60 via-slate-200 to-red-100/60 flex items-center justify-center"
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 bg-zinc-950 flex items-center justify-center overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-400/20 via-transparent to-slate-400/20 backdrop-blur-3xl" />
+            {/* Split Ambient Background - Angel Left, Devil Right */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+              <div className="absolute top-[30%] -left-[10%] w-[50%] h-[70%] bg-sky-900/20 rounded-full blur-[150px]" />
+              <div className="absolute top-[30%] -right-[10%] w-[50%] h-[70%] bg-red-900/20 rounded-full blur-[150px]" />
 
-            <div className="w-full max-w-2xl px-6 z-10 flex flex-col items-center gap-8">
-              <div className="text-center space-y-2">
-                <h1
-                  className="text-5xl md:text-7xl font-black text-slate-800 tracking-tighter drop-shadow-lg"
-                  style={{ textShadow: "3px 3px 0 rgba(0,0,0,0.1)" }}
+              {/* Floating '?' Particles */}
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute text-zinc-800 font-serif font-bold text-4xl opacity-20 pointer-events-none"
+                  initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, opacity: 0 }}
+                  animate={{
+                    y: [0, -100],
+                    opacity: [0, 0.3, 0],
+                    rotate: [0, 20, -20]
+                  }}
+                  transition={{
+                    duration: 10 + Math.random() * 5,
+                    repeat: Infinity,
+                    delay: i * 2,
+                    ease: "linear"
+                  }}
                 >
-                  DECISION<span className="text-amber-600">.</span>VALIDATOR
+                  ?
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="w-full max-w-3xl px-6 z-10 flex flex-col items-center gap-10">
+              <div className="text-center space-y-4">
+                <h1
+                  className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-slate-100 to-red-200 tracking-tighter"
+                  style={{ filter: "drop-shadow(0 0 30px rgba(255,255,255,0.1))" }}
+                >
+                  DECISION<span className="text-zinc-500">.</span>VALIDATOR
                 </h1>
-                <p className="text-slate-600 text-lg uppercase tracking-widest font-bold drop-shadow-sm">
-                  Swipe Right for Salvation • Left for Sin
+                <p className="text-zinc-400 text-base md:text-lg font-medium italic tracking-wide">
+                  For when you know the answer, but really want a second opinion.
                 </p>
               </div>
 
-              <div className="w-full bg-gradient-to-b from-stone-200 to-stone-300 p-3 rounded-3xl shadow-2xl border-4 border-stone-400 flex flex-col md:flex-row gap-3 relative">
-                {/* Stone texture effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-stone-100/50 to-transparent rounded-3xl pointer-events-none" />
+              {/* Glassmorphism Input Container with Split accent */}
+              <div className="w-full bg-white/5 backdrop-blur-2xl p-4 rounded-3xl shadow-2xl border border-white/10 flex flex-col md:flex-row gap-4 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                 <input
                   type="text"
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
-                  placeholder="Should I call my ex?"
-                  className="relative flex-1 bg-amber-50/90 px-6 py-5 text-xl outline-none text-slate-800 placeholder:text-slate-400 font-semibold rounded-2xl border-3 border-amber-700/30 shadow-inner focus:border-amber-600 transition-all"
+                  placeholder={placeholder + "|"}
+                  className="relative flex-1 bg-black/40 px-8 py-6 text-xl outline-none text-zinc-100 placeholder:text-zinc-600 font-medium rounded-2xl border border-white/5 focus:border-zinc-500/50 focus:bg-black/60 transition-all shadow-inner"
                   onKeyDown={(e) => e.key === "Enter" && handleDecide()}
                 />
                 <motion.button
@@ -101,18 +171,24 @@ export default function Home() {
                   disabled={loading || !userInput.trim()}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative bg-gradient-to-b from-amber-600 to-amber-800 hover:from-amber-500 hover:to-amber-700 text-white px-10 py-5 rounded-2xl font-black text-xl shadow-xl border-4 border-amber-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.3)" }}
+                  className="relative bg-gradient-to-br from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 text-white px-10 py-6 rounded-2xl font-bold text-xl shadow-lg border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  style={{ boxShadow: "0 0 20px rgba(161, 161, 170, 0.2)" }}
                 >
-                  {loading ? "JUDGING..." : "SUMMON"}
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
+                      <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                      <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+                    </span>
+                  ) : "SUMMON"}
                 </motion.button>
               </div>
 
-              {/* Hints */}
-              <div className="flex gap-8 text-slate-500 font-black text-sm tracking-widest drop-shadow-sm">
-                <span>← ANGEL</span>
-                <span>JUDGE ↑</span>
-                <span>DEVIL →</span>
+              {/* Hints - Split theme styling */}
+              <div className="flex gap-12 text-zinc-600 font-bold text-xs tracking-[0.2em]">
+                <span className="hover:text-sky-400 transition-colors cursor-default">← ANGEL</span>
+                <span className="hover:text-amber-500 transition-colors cursor-default">JUDGE ↑</span>
+                <span className="hover:text-red-400 transition-colors cursor-default">DEVIL →</span>
               </div>
             </div>
           </motion.div>
@@ -207,24 +283,7 @@ export default function Home() {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="absolute inset-0 z-20 bg-gradient-to-b from-zinc-900 via-red-950/60 to-zinc-950 flex items-center justify-center overflow-hidden"
           >
-            <div className="absolute inset-0 opacity-20 animate-crack-pulse">
-              <svg width="100%" height="100%" className="absolute inset-0">
-                <defs>
-                  <pattern id="cracks" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
-                    <path d="M0,50 Q50,30 100,50 T200,50" stroke="rgba(255,100,0,0.4)" strokeWidth="2" fill="none" />
-                    <path d="M50,0 Q30,50 50,100 T50,200" stroke="rgba(255,100,0,0.3)" strokeWidth="1.5" fill="none" />
-                    <path
-                      d="M150,0 Q170,50 150,100 T150,200"
-                      stroke="rgba(255,100,0,0.3)"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                    <circle cx="100" cy="100" r="3" fill="rgba(255,50,0,0.5)" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#cracks)" />
-              </svg>
-            </div>
+
 
             {[...Array(12)].map((_, i) => (
               <motion.div
@@ -266,17 +325,19 @@ export default function Home() {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute inset-0 z-20 bg-gradient-to-b from-amber-100 to-amber-50 flex items-center justify-center"
+            className="absolute inset-0 z-20 bg-white bg-gradient-to-b from-neutral-200 to-neutral-50 flex items-center justify-center"
+            style={{ backgroundImage: "radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 100%)" }}
           >
             <div className="absolute top-4 right-4 z-30">
               <button
                 onClick={() => setView("neutral")}
-                className="text-amber-900 hover:text-amber-700 font-black text-lg drop-shadow-md transition-colors"
+                className="text-stone-800 hover:text-amber-700 font-black text-lg drop-shadow-md transition-colors"
+                style={{ fontFamily: "var(--font-playfair), serif" }}
               >
-                ↓ BACK
+                ↓ DISMISS
               </button>
             </div>
-            <JudgeVerdict />
+            <JudgeVerdict content={judgeReason} loading={loading} />
           </motion.div>
         )}
       </AnimatePresence>
