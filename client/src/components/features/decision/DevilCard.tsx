@@ -13,7 +13,7 @@ export default function DevilCard({ content, loading }: DevilCardProps) {
     const [isScrollOpen, setScrollOpen] = useState(false)
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen w-full relative pointer-events-none">
+        <div className="flex flex-col items-center justify-center min-h-[100dvh] w-full relative pointer-events-none gap-6">
             {/* Horns Animation - Drops from top */}
 
 
@@ -43,7 +43,7 @@ export default function DevilCard({ content, loading }: DevilCardProps) {
                 <img
                     src="/devil.png"
                     alt="Devil"
-                    className="w-80 h-auto drop-shadow-2xl contrast-125 hover:brightness-110 transition-all duration-300"
+                    className="w-64 md:w-80 h-auto drop-shadow-2xl contrast-125 hover:brightness-110 transition-all duration-300"
                     style={{ filter: "drop-shadow(0 0 30px rgba(244, 108, 17, 0.3))" }}
                 />
             </motion.div>

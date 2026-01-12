@@ -21,11 +21,11 @@ export default function ScrollMessage({ text, isOpen, theme = "default" }: Scrol
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="overflow-hidden w-full max-w-sm mx-auto mt-4"
+                    className="overflow-hidden w-full max-w-[90vw] md:max-w-md mx-auto mt-4 break-words hyphens-auto"
                 >
                     <div className={`p-6 shadow-xl relative ${isJudge
-                            ? "bg-stone-50 border-4 border-double border-amber-900/20 rounded-lg"
-                            : "bg-[#fdfbf7] rounded-sm shadow-inner border-y-8 border-amber-700"
+                        ? "bg-stone-50 border-4 border-double border-amber-900/20 rounded-lg"
+                        : "bg-[#fdfbf7] rounded-sm shadow-inner border-y-8 border-amber-700"
                         }`}>
                         {/* Texture overlays */}
                         {!isJudge && (
@@ -36,8 +36,8 @@ export default function ScrollMessage({ text, isOpen, theme = "default" }: Scrol
                         )}
 
                         <div className={`text-lg leading-relaxed ${isJudge
-                                ? "font-serif text-slate-800 font-medium text-center italic"
-                                : "font-serif text-amber-900"
+                            ? "font-serif text-slate-800 font-medium text-center italic"
+                            : "font-serif text-amber-900"
                             }`}>
                             <ReactMarkdown
                                 components={{

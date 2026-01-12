@@ -48,7 +48,7 @@ export default function JudgeVerdict({ content, loading }: JudgeVerdictProps) {
                         <motion.div
                             className="absolute bottom-2 left-1/2 -translate-x-1/2 w-40 h-10 bg-amber-100 rounded-[100%] blur-xl opacity-0"
                             animate={{ opacity: [0, 0.6, 0], scale: [0.5, 1.5, 2] }}
-                            transition={{ duration: 0.6, delay: 0.1 }}
+                            transition={{ duration: 1, delay: 0.1 }}
                         />
                     )}
                 </div>

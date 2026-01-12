@@ -32,6 +32,11 @@ export default function Home() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [loopNum, setLoopNum] = useState(0)
   const [typingSpeed, setTypingSpeed] = useState(150)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Typewriter Effect
   useEffect(() => {
@@ -39,9 +44,8 @@ export default function Home() {
       const i = loopNum % PLACEHOLDERS.length
       const fullText = PLACEHOLDERS[i]
 
-      setPlaceholder(isDeleting
-        ? fullText.substring(0, placeholder.length - 1)
-        : fullText.substring(0, placeholder.length + 1)
+      setPlaceholder(
+        isDeleting ? fullText.substring(0, placeholder.length - 1) : fullText.substring(0, placeholder.length + 1),
       )
 
       setTypingSpeed(isDeleting ? 50 : 150)
@@ -61,12 +65,14 @@ export default function Home() {
   // Handlers for Swipe Gestures
   const handlers = useSwipeable({
     onSwipedRight: () => {
-      if (view === "neutral") setView("angel")
-      else if (view === "devil") setView("neutral")
+      if (view === "neutral")
+        setView("angel") // Go Left (Angel)
+      else setView("neutral") // Return home from anywhere
     },
     onSwipedLeft: () => {
-      if (view === "neutral") setView("devil")
-      else if (view === "angel") setView("neutral")
+      if (view === "neutral")
+        setView("devil") // Go Right (Devil)
+      else setView("neutral") // Return home from anywhere
     },
     onSwipedUp: () => {
       if (view === "neutral") setView("judge")
@@ -101,7 +107,10 @@ export default function Home() {
   }
 
   return (
-    <main {...handlers} className="h-screen w-full relative overflow-hidden flex flex-col items-center justify-center">
+    <main
+      {...handlers}
+      className="h-[100dvh] w-full relative overflow-hidden flex flex-col items-center justify-center"
+    >
       <AnimatePresence mode="wait">
         {/* NEUTRAL VIEW - Split Crossroads Theme */}
         {view === "neutral" && (
@@ -115,47 +124,52 @@ export default function Home() {
           >
             {/* Split Ambient Background - Angel Left, Devil Right */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-              <div className="absolute top-[30%] -left-[10%] w-[50%] h-[70%] bg-sky-900/20 rounded-full blur-[150px]" />
-              <div className="absolute top-[30%] -right-[10%] w-[50%] h-[70%] bg-red-900/20 rounded-full blur-[150px]" />
+              <div className="absolute top-[30%] -left-[10%] w-[80%] md:w-[50%] h-[70%] bg-sky-900/20 rounded-full blur-[100px] md:blur-[150px]" />
+              <div className="absolute top-[30%] -right-[10%] w-[80%] md:w-[50%] h-[70%] bg-red-900/20 rounded-full blur-[100px] md:blur-[150px]" />
 
               {/* Floating '?' Particles */}
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-zinc-800 font-serif font-bold text-4xl opacity-20 pointer-events-none"
-                  initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, opacity: 0 }}
-                  animate={{
-                    y: [0, -100],
-                    opacity: [0, 0.3, 0],
-                    rotate: [0, 20, -20]
-                  }}
-                  transition={{
-                    duration: 10 + Math.random() * 5,
-                    repeat: Infinity,
-                    delay: i * 2,
-                    ease: "linear"
-                  }}
-                >
-                  ?
-                </motion.div>
-              ))}
+              {mounted &&
+                [...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute text-zinc-800 font-serif font-bold text-2xl md:text-4xl opacity-20 pointer-events-none"
+                    initial={{
+                      x: Math.random() * window.innerWidth,
+                      y: Math.random() * window.innerHeight,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      y: [0, -100],
+                      opacity: [0, 0.3, 0],
+                      rotate: [0, 20, -20],
+                    }}
+                    transition={{
+                      duration: 10 + Math.random() * 5,
+                      repeat: Number.POSITIVE_INFINITY,
+                      delay: i * 2,
+                      ease: "linear",
+                    }}
+                  >
+                    ?
+                  </motion.div>
+                ))}
             </div>
 
-            <div className="w-full max-w-3xl px-6 z-10 flex flex-col items-center gap-10">
-              <div className="text-center space-y-4">
+            <div className="w-full max-w-3xl px-4 sm:px-6 z-10 flex flex-col items-center gap-6 sm:gap-10">
+              <div className="text-center space-y-2 sm:space-y-4">
                 <h1
-                  className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-slate-100 to-red-200 tracking-tighter"
+                  className="text-3xl sm:text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-slate-100 to-red-200 tracking-tighter"
                   style={{ filter: "drop-shadow(0 0 30px rgba(255,255,255,0.1))" }}
                 >
                   DECISION<span className="text-zinc-500">.</span>VALIDATOR
                 </h1>
-                <p className="text-zinc-400 text-base md:text-lg font-medium italic tracking-wide">
+                <p className="text-zinc-400 text-xs sm:text-base md:text-lg font-medium italic tracking-wide px-2">
                   For when you know the answer, but really want a second opinion.
                 </p>
               </div>
 
               {/* Glassmorphism Input Container with Split accent */}
-              <div className="w-full bg-white/5 backdrop-blur-2xl p-4 rounded-3xl shadow-2xl border border-white/10 flex flex-col md:flex-row gap-4 relative overflow-hidden group">
+              <div className="w-full bg-white/5 backdrop-blur-2xl p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 flex flex-col sm:flex-row gap-3 sm:gap-4 relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                 <input
@@ -163,7 +177,7 @@ export default function Home() {
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   placeholder={placeholder + "|"}
-                  className="relative flex-1 bg-black/40 px-8 py-6 text-xl outline-none text-zinc-100 placeholder:text-zinc-600 font-medium rounded-2xl border border-white/5 focus:border-zinc-500/50 focus:bg-black/60 transition-all shadow-inner"
+                  className="relative flex-1 bg-black/40 px-4 sm:px-8 py-4 sm:py-6 text-base sm:text-xl outline-none text-zinc-100 placeholder:text-zinc-600 font-medium rounded-xl sm:rounded-2xl border border-white/5 focus:border-zinc-500/50 focus:bg-black/60 transition-all shadow-inner"
                   onKeyDown={(e) => e.key === "Enter" && handleDecide()}
                 />
                 <motion.button
@@ -171,24 +185,47 @@ export default function Home() {
                   disabled={loading || !userInput.trim()}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative bg-gradient-to-br from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 text-white px-10 py-6 rounded-2xl font-bold text-xl shadow-lg border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="relative bg-gradient-to-br from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 text-white px-6 sm:px-10 py-4 sm:py-6 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-xl shadow-lg border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
                   style={{ boxShadow: "0 0 20px rgba(161, 161, 170, 0.2)" }}
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
-                      <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-                      <span className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+                      <span
+                        className="w-2 h-2 bg-white rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-white rounded-full animate-bounce"
+                        style={{ animationDelay: "0.4s" }}
+                      />
                     </span>
-                  ) : "SUMMON"}
+                  ) : (
+                    "SUMMON"
+                  )}
                 </motion.button>
               </div>
 
               {/* Hints - Split theme styling */}
-              <div className="flex gap-12 text-zinc-600 font-bold text-xs tracking-[0.2em]">
-                <span className="hover:text-sky-400 transition-colors cursor-default">← ANGEL</span>
-                <span className="hover:text-amber-500 transition-colors cursor-default">JUDGE ↑</span>
-                <span className="hover:text-red-400 transition-colors cursor-default">DEVIL →</span>
+              <div className="flex gap-3 sm:gap-6 md:gap-12 text-zinc-600 font-bold text-[8px] sm:text-[10px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] flex-wrap justify-center">
+                <button
+                  onClick={() => setView("angel")}
+                  className="hover:text-sky-400 transition-colors cursor-pointer"
+                >
+                  ← ANGEL
+                </button>
+                <button
+                  onClick={() => setView("judge")}
+                  className="hover:text-amber-500 transition-colors cursor-pointer"
+                >
+                  JUDGE ↑
+                </button>
+                <button
+                  onClick={() => setView("devil")}
+                  className="hover:text-red-400 transition-colors cursor-pointer"
+                >
+                  DEVIL →
+                </button>
               </div>
             </div>
           </motion.div>
@@ -222,7 +259,7 @@ export default function Home() {
             />
 
             <motion.div
-              className="absolute top-10 left-20 w-32 h-20 opacity-80 animate-float"
+              className="absolute top-4 sm:top-10 left-4 sm:left-20 w-20 sm:w-32 h-12 sm:h-20 opacity-80 animate-float"
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.8 }}
               transition={{ delay: 0.3 }}
@@ -235,7 +272,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              className="absolute top-40 right-10 w-40 h-24 opacity-70 animate-float-slow"
+              className="absolute top-20 sm:top-40 right-2 sm:right-10 w-24 sm:w-40 h-14 sm:h-24 opacity-70 animate-float-slow"
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.7 }}
               transition={{ delay: 0.5 }}
@@ -249,7 +286,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              className="absolute bottom-32 left-1/4 w-36 h-22 opacity-60 animate-float-delayed"
+              className="absolute bottom-24 sm:bottom-32 left-1/4 w-24 sm:w-36 h-14 sm:h-22 opacity-60 animate-float-delayed"
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.6 }}
               transition={{ delay: 0.7 }}
@@ -261,12 +298,12 @@ export default function Home() {
               </svg>
             </motion.div>
 
-            <div className="absolute top-4 left-4 z-30">
+            <div className="absolute top-4 right-4 z-30">
               <button
                 onClick={() => setView("neutral")}
-                className="text-sky-600 hover:text-sky-800 font-black text-lg drop-shadow-md transition-colors"
+                className="text-sky-600 hover:text-sky-800 font-black text-sm sm:text-lg drop-shadow-md transition-colors"
               >
-                ← BACK
+                BACK →
               </button>
             </div>
             <AngelCard content={angelReason} loading={loading} />
@@ -283,8 +320,6 @@ export default function Home() {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="absolute inset-0 z-20 bg-gradient-to-b from-zinc-900 via-red-950/60 to-zinc-950 flex items-center justify-center overflow-hidden"
           >
-
-
             {[...Array(12)].map((_, i) => (
               <motion.div
                 key={i}
@@ -305,12 +340,12 @@ export default function Home() {
               />
             ))}
 
-            <div className="absolute top-4 right-4 z-30">
+            <div className="absolute top-4 left-4 z-30">
               <button
                 onClick={() => setView("neutral")}
-                className="text-red-700 hover:text-red-500 font-black text-lg drop-shadow-md transition-colors"
+                className="text-red-700 hover:text-red-500 font-black text-sm sm:text-lg drop-shadow-md transition-colors"
               >
-                BACK →
+                ← BACK
               </button>
             </div>
             <DevilCard content={devilReason} loading={loading} />
@@ -326,12 +361,14 @@ export default function Home() {
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="absolute inset-0 z-20 bg-white bg-gradient-to-b from-neutral-200 to-neutral-50 flex items-center justify-center"
-            style={{ backgroundImage: "radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 100%)" }}
+            style={{
+              backgroundImage: "radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 100%)",
+            }}
           >
             <div className="absolute top-4 right-4 z-30">
               <button
                 onClick={() => setView("neutral")}
-                className="text-stone-800 hover:text-amber-700 font-black text-lg drop-shadow-md transition-colors"
+                className="text-stone-800 hover:text-amber-700 font-black text-sm sm:text-lg drop-shadow-md transition-colors"
                 style={{ fontFamily: "var(--font-playfair), serif" }}
               >
                 ↓ DISMISS

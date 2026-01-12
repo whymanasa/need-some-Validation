@@ -13,7 +13,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
     const [isScrollOpen, setScrollOpen] = useState(false)
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen w-full relative pointer-events-none">
+        <div className="flex flex-col items-center justify-center min-h-[100dvh] w-full relative pointer-events-none gap-6">
             {/* Halo Animation - Drops from top */}
 
 
@@ -27,7 +27,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
             >
-                <img src="/angel.png" alt="Angel" className="w-80 h-auto drop-shadow-2xl brightness-110" />
+                <img src="/angel.png" alt="Angel" className="w-64 md:w-80 h-auto drop-shadow-2xl brightness-110" />
             </motion.div>
 
 
