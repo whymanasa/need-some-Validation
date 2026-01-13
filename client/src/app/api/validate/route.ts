@@ -53,7 +53,7 @@ export async function POST(request: Request) {
                 break;
         }
 
-        const cacheKey = `validate:v2:${promptType}:${crypto.createHash('sha256').update(userInput).digest('hex')}`;
+        const cacheKey = `validate:v3:${promptType}:${crypto.createHash('sha256').update(userInput).digest('hex')}`;
 
         const responseContent = await getOrSetCache(cacheKey, async () => {
             const result = await client.chat.completions.create({

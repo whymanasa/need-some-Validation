@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
     // 2. Rate Limiting (Only for /api routes)
     if (request.nextUrl.pathname.startsWith('/api')) {
-        const ip = (request as any).ip ?? request.headers.get('x-forwarded-for') ?? "127.0.0.1";
+        const ip = (request as unknown as { ip?: string }).ip ?? request.headers.get('x-forwarded-for') ?? "127.0.0.1";
 
         let limit = 20;
         let remaining = 20;
