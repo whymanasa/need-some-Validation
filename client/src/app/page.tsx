@@ -26,6 +26,7 @@ export default function Home() {
   const [devilReason, setDevilReason] = useState("")
   const [judgeReason, setJudgeReason] = useState("")
   const [loading, setLoading] = useState(false)
+  const [lastSubmittedInput, setLastSubmittedInput] = useState("")
 
   // Dynamic Placeholder State
   const [placeholder, setPlaceholder] = useState("")
@@ -82,7 +83,7 @@ export default function Home() {
   })
 
   const handleDecide = async () => {
-    if (!userInput.trim()) return
+    if (!userInput.trim() || userInput === lastSubmittedInput) return
 
     setLoading(true)
     setAngelReason("")
@@ -99,6 +100,7 @@ export default function Home() {
       setAngelReason(angelRes.data.result)
       setDevilReason(devilRes.data.result)
       setJudgeReason(judgeRes.data.result)
+      setLastSubmittedInput(userInput)
     } catch (error) {
       console.error("Error fetching decisions:", error)
     } finally {
@@ -182,7 +184,7 @@ export default function Home() {
                 />
                 <motion.button
                   onClick={handleDecide}
-                  disabled={loading || !userInput.trim()}
+                  disabled={loading || !userInput.trim() || userInput === lastSubmittedInput}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="relative bg-gradient-to-br from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 text-white px-6 sm:px-10 py-4 sm:py-6 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-xl shadow-lg border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
@@ -206,26 +208,88 @@ export default function Home() {
                 </motion.button>
               </div>
 
-              {/* Hints - Split theme styling */}
-              <div className="flex gap-3 sm:gap-6 md:gap-12 text-zinc-600 font-bold text-[8px] sm:text-[10px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] flex-wrap justify-center">
-                <button
-                  onClick={() => setView("angel")}
-                  className="hover:text-sky-400 transition-colors cursor-pointer"
-                >
-                  ← ANGEL
-                </button>
-                <button
-                  onClick={() => setView("judge")}
-                  className="hover:text-amber-500 transition-colors cursor-pointer"
-                >
-                  JUDGE ↑
-                </button>
-                <button
-                  onClick={() => setView("devil")}
-                  className="hover:text-red-400 transition-colors cursor-pointer"
-                >
-                  DEVIL →
-                </button>
+              <div className="h-12 flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <motion.div
+                      key="processing"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="text-center"
+                    >
+                      <p className="text-zinc-400 font-serif italic text-sm sm:text-base animate-pulse">
+                        The Judge is deliberating...
+                      </p>
+                    </motion.div>
+                  ) : angelReason ? (
+                    <motion.div
+                      key="instruction"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="text-center"
+                    >
+                      <motion.p
+                        animate={{ opacity: [0.6, 1, 0.6] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="text-zinc-300 font-medium text-lg tracking-widest mb-6"
+                      >
+                        ✨ THE VERDICT IS IN ✨
+                      </motion.p>
+                      <div className="flex gap-8 text-zinc-500 font-bold text-[10px] sm:text-xs tracking-[0.25em] flex-wrap justify-center">
+                        <motion.button
+                          onClick={() => setView("angel")}
+                          className="hover:text-sky-400 transition-colors cursor-pointer"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          ← ANGEL
+                        </motion.button>
+                        <motion.button
+                          onClick={() => setView("judge")}
+                          className="hover:text-amber-500 transition-colors cursor-pointer"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          JUDGE ↑
+                        </motion.button>
+                        <motion.button
+                          onClick={() => setView("devil")}
+                          className="hover:text-red-400 transition-colors cursor-pointer"
+                          whileHover={{ scale: 1.1 }}
+                        >
+                          DEVIL →
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="hints"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex gap-3 sm:gap-6 md:gap-12 text-zinc-600 font-bold text-[8px] sm:text-[10px] md:text-xs tracking-[0.15em] md:tracking-[0.2em] flex-wrap justify-center"
+                    >
+                      <button
+                        onClick={() => setView("angel")}
+                        className="hover:text-sky-400 transition-colors cursor-pointer"
+                      >
+                        ← ANGEL
+                      </button>
+                      <button
+                        onClick={() => setView("judge")}
+                        className="hover:text-amber-500 transition-colors cursor-pointer"
+                      >
+                        JUDGE ↑
+                      </button>
+                      <button
+                        onClick={() => setView("devil")}
+                        className="hover:text-red-400 transition-colors cursor-pointer"
+                      >
+                        DEVIL →
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
