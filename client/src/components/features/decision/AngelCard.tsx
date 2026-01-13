@@ -13,40 +13,48 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
     const [isScrollOpen, setScrollOpen] = useState(false)
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[100dvh] w-full relative pointer-events-none gap-6">
-            {/* Halo Animation - Drops from top */}
-
-
-            {/* Angel Character - Fades in after Halo */}
+        <div className="flex flex-col items-center justify-center h-[100dvh] w-full relative overflow-hidden transition-all duration-500">
+            {/* Angel Character Section */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="relative z-10 cursor-pointer pointer-events-auto"
-                onClick={() => !loading && setScrollOpen(!isScrollOpen)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="relative z-10 w-full flex items-center justify-center transition-all duration-500"
             >
-                <img src="/angel.png" alt="Angel" className="w-64 md:w-80 h-auto drop-shadow-2xl brightness-110" />
+                <motion.div
+                    className="cursor-pointer"
+                    onClick={() => !loading && setScrollOpen(!isScrollOpen)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    <img
+                        src="/angel.png"
+                        alt="Angel"
+                        className={`transition-all duration-500 object-contain drop-shadow-2xl brightness-110 ${isScrollOpen ? "w-auto h-[25vh]" : "w-64 md:w-80 h-auto max-h-[45vh]"
+                            }`}
+                    />
+                </motion.div>
             </motion.div>
 
-
-
-            {/* Loading State or Scroll Message */}
-            <div className="mt-8 w-full max-w-md px-4 min-h-[100px] flex justify-center pointer-events-auto">
-                {loading ? (
-                    <motion.div
-                        animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-                        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5 }}
-                        className="text-sky-600 font-serif font-semibold text-lg bg-white/90 px-8 py-4 rounded-full shadow-lg border-2 border-sky-300"
-                        style={{ fontFamily: "var(--font-playfair), serif" }}
-                    >
-                        Listening to the greater good...
-                    </motion.div>
-                ) : (
-                    <ScrollMessage text={content || "Tap the Angel to see the message..."} isOpen={isScrollOpen} />
-                )}
-            </div>
+            {/* Message/Loading Section */}
+            <motion.div
+                className="w-full relative z-20 flex flex-col items-center justify-start bg-white/0"
+            >
+                <div className="w-full max-w-md px-4 pointer-events-auto">
+                    {loading ? (
+                        <motion.div
+                            animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
+                            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5 }}
+                            className="text-sky-600 font-serif font-semibold text-lg bg-white/90 px-8 py-4 rounded-full shadow-lg border-2 border-sky-300 mx-auto mt-8"
+                            style={{ fontFamily: "var(--font-playfair), serif" }}
+                        >
+                            Listening to the greater good...
+                        </motion.div>
+                    ) : (
+                        <ScrollMessage
+                            text={content || "write your problem and let the angel guide you..."}
+                            isOpen={isScrollOpen}
+                        />
+                    )}
+                </div>
+            </motion.div>
 
             {/* Hint */}
             {!isScrollOpen && !loading && (
@@ -54,7 +62,7 @@ export default function AngelCard({ content, loading }: AngelCardProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 0.7 }}
                     transition={{ delay: 1.5 }}
-                    className="absolute bottom-10 text-sky-700/60 text-sm italic font-serif"
+                    className="absolute bottom-10 text-sky-700/60 text-sm italic font-serif z-0"
                     style={{ fontFamily: "var(--font-playfair), serif" }}
                 >
                     (Tap for Guidance)

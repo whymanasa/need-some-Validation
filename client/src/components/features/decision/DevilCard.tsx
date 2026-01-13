@@ -13,61 +13,67 @@ export default function DevilCard({ content, loading }: DevilCardProps) {
     const [isScrollOpen, setScrollOpen] = useState(false)
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[100dvh] w-full relative pointer-events-none gap-6">
-            {/* Horns Animation - Drops from top */}
-
-
-            {/* Devil Character - Fades in after Horns */}
-            {/* Flickering Glow */}
+        <div className="flex flex-col items-center justify-center h-[100dvh] w-full relative overflow-hidden transition-all duration-500">
+            {/* Devil Character Section */}
             <motion.div
-                className="absolute z-0 w-64 h-64 rounded-full bg-orange-600/30 blur-3xl"
-                animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                    scale: [1, 1.2, 1],
-                }}
-                transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                }}
-            />
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="relative z-10 cursor-pointer pointer-events-auto"
-                onClick={() => !loading && setScrollOpen(!isScrollOpen)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="relative z-10 w-full flex items-center justify-center transition-all duration-500"
             >
-                <img
-                    src="/devil.png"
-                    alt="Devil"
-                    className="w-64 md:w-80 h-auto drop-shadow-2xl contrast-125 hover:brightness-110 transition-all duration-300"
-                    style={{ filter: "drop-shadow(0 0 30px rgba(244, 108, 17, 0.3))" }}
-                />
+                <div className="relative">
+                    {/* Flickering Glow */}
+                    <motion.div
+                        className="absolute inset-0 rounded-full bg-orange-600/30 blur-3xl z-0"
+                        animate={{
+                            opacity: [0.3, 0.6, 0.3],
+                            scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Number.POSITIVE_INFINITY,
+                            ease: "easeInOut",
+                        }}
+                    />
+                    <motion.div
+                        className="relative z-10 cursor-pointer pointer-events-auto"
+                        onClick={() => !loading && setScrollOpen(!isScrollOpen)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <img
+                            src="/devil.png"
+                            alt="Devil"
+                            className={`transition-all duration-500 object-contain drop-shadow-2xl contrast-125 hover:brightness-110 ${isScrollOpen ? "w-auto h-[25vh]" : "w-64 md:w-80 h-auto max-h-[45vh]"
+                                }`}
+                            style={{ filter: "drop-shadow(0 0 30px rgba(244, 108, 17, 0.3))" }}
+                        />
+                    </motion.div>
+                </div>
             </motion.div>
 
-
-
-            {/* Loading State or Scroll Message */}
-            <div className="mt-8 w-full max-w-md px-4 min-h-[100px] flex justify-center pointer-events-auto z-10">
-                {loading ? (
-                    <motion.div
-                        animate={{ skewX: [0, -5, 5, 0], opacity: [0.8, 1, 0.8] }}
-                        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
-                        className="text-red-400 font-black text-lg bg-black/90 px-8 py-4 rounded-lg border-2 border-red-900 shadow-red-900/40 shadow-xl"
-                        style={{
-                            fontFamily: "var(--font-black-ops), sans-serif",
-                            textShadow: "2px 2px 0 rgba(0,0,0,0.5)",
-                        }}
-                    >
-                        Calculating personal gain...
-                    </motion.div>
-                ) : (
-                    <ScrollMessage text={content || "Tap the Devil to see the message..."} isOpen={isScrollOpen} />
-                )}
-            </div>
+            {/* Message/Loading Section */}
+            <motion.div
+                className="w-full relative z-20 flex flex-col items-center justify-start bg-white/0"
+            >
+                <div className="w-full max-w-md px-4 pointer-events-auto">
+                    {loading ? (
+                        <motion.div
+                            animate={{ skewX: [0, -5, 5, 0], opacity: [0.8, 1, 0.8] }}
+                            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
+                            className="text-red-400 font-black text-lg bg-black/90 px-8 py-4 rounded-lg border-2 border-red-900 shadow-red-900/40 shadow-xl mx-auto mt-8"
+                            style={{
+                                fontFamily: "var(--font-black-ops), sans-serif",
+                                textShadow: "2px 2px 0 rgba(0,0,0,0.5)",
+                            }}
+                        >
+                            Calculating personal gain...
+                        </motion.div>
+                    ) : (
+                        <ScrollMessage
+                            text={content || "write your problem and let the devil guide you..."}
+                            isOpen={isScrollOpen}
+                        />
+                    )}
+                </div>
+            </motion.div>
 
             {/* Hint */}
             {!isScrollOpen && !loading && (
@@ -75,7 +81,7 @@ export default function DevilCard({ content, loading }: DevilCardProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 0.6 }}
                     transition={{ delay: 1.5 }}
-                    className="absolute bottom-10 text-red-700/50 text-sm font-black uppercase tracking-wider"
+                    className="absolute bottom-10 text-red-700/50 text-sm font-black uppercase tracking-wider z-10"
                     style={{ fontFamily: "var(--font-black-ops), sans-serif" }}
                 >
                     (Unleash the Id)

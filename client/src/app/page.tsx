@@ -230,13 +230,7 @@ export default function Home() {
                       exit={{ opacity: 0, y: -10 }}
                       className="text-center"
                     >
-                      <motion.p
-                        animate={{ opacity: [0.6, 1, 0.6] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        className="text-zinc-300 font-medium text-lg tracking-widest mb-6"
-                      >
-                        ✨ THE VERDICT IS IN ✨
-                      </motion.p>
+
                       <div className="flex gap-8 text-zinc-500 font-bold text-[10px] sm:text-xs tracking-[0.25em] flex-wrap justify-center">
                         <motion.button
                           onClick={() => setView("angel")}
